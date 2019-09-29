@@ -3,11 +3,11 @@
     <header class="dependency__header">
           <div class="dependency__item dependency__item--fill">
       <div class="version">{{ dependency.version }}</div>
-      <strong>{{ dependency.name }}</strong>
+      <strong class="package-name">{{ dependency.name }}</strong>
     </div>
     <div class="dependency__item">
       <div class="status">
-        <loader-icon size="1.5x" class="custom-class icon loading" :class="{'icon--hide': !loading}"></loader-icon>
+        <loader-icon size="1.5x" class="custom-class icon rotating" :class="{'icon--hide': !loading}"></loader-icon>
         <check-icon size="1.5x" class="custom-class icon icon--success" :class="{'icon--hide': error || loading || references.length > 0}"></check-icon>
         <alert-circle-icon size="1.5x" class="custom-class icon icon--warning" :class="{'icon--hide': loading || !error}"></alert-circle-icon>
       <alert-triangle-icon size="1.5x" class="custom-class icon icon--error" v-if="references.length > 0"></alert-triangle-icon>
@@ -54,15 +54,16 @@ export default {
   mounted() {
     axios.get(`https://api.npms.io/v2/package/${this.dependency.name}`).then((response) => {
       const repositoryUrl = response.data.collected.metadata.links.repository || response.data.collected.metadata.links.homepage;
-      if (!repositoryUrl) {
+      if (!repositoryUrl || !repositoryUrl.includes('github')) {
         this.error = true;
         this.loading = false;
         return;
       }
+
       this.checkIssues(repositoryUrl);
       // this.checkReleases(repositoryUrl);
     }).catch((error) => {
-      console.log(error);
+      console.error(error);
       this.error = true;
       this.loading = false;
     });
@@ -207,5 +208,9 @@ a {
 
 .references {
   margin-top: 10px;
+}
+
+.package-name {
+  font-size: 18px;
 }
 </style>
