@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-resty/resty/v2"
+	pkg "github.com/ja1984/lib-leak/backend/handlers/package"
 )
 
 func main() {
@@ -14,6 +14,7 @@ func main() {
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowAllOrigins = true
 	r.Use(cors.New(corsConfig))
+	r.Use(errorHandler)
 	initializeRoutes(r)
 
 	err := r.Run(fmt.Sprintf(":%v", 9000))
@@ -23,18 +24,13 @@ func main() {
 }
 
 func initializeRoutes(r *gin.Engine) {
-	apiGroup := r.Group("api")
-	apiGroup.GET("/repo/", func(c *gin.Context) {
-		client := resty.New()
-		resp, err := client.R().
-			EnableTrace().
-			Get(c.Query("repoUrl"))
+	pkg.Routes(r.Group("api"))
+}
 
-		if err != nil {
-			c.Status(500)
-			return
-		}
+func errorHandler(c *gin.Context) {
+	c.Next()
 
-		c.JSON(200, resp)
-	})
+	if len(c.Errors) > 0 {
+		c.JSON(-1, c.Errors) // -1 == not override the current error code
+	}
 }
