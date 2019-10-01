@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	pkg "github.com/ja1984/lib-leak/backend/handlers/package"
+	dependency "github.com/ja1984/lib-leak/backend/handlers/dependency"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 }
 
 func initializeRoutes(r *gin.Engine) {
-	pkg.Routes(r.Group("api"))
+	dependency.Routes(r.Group("api"))
 }
 
 func errorHandler(c *gin.Context) {

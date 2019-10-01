@@ -1,4 +1,4 @@
-package pkg
+package dependency
 
 import (
 	"context"
@@ -11,10 +11,10 @@ import (
 )
 
 func Routes(r *gin.RouterGroup) {
-	r.GET("package/issues/:name", getPackageIssues)
+	r.GET("dependency/:name/issues", getDependencyIssues)
 }
 
-func getPackageIssues(c *gin.Context) {
+func getDependencyIssues(c *gin.Context) {
 	client := resty.New()
 	response, _ := client.R().
 		SetResult(&NpmPackageResponse{}).
